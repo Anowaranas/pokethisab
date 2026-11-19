@@ -1,1 +1,0 @@
-# dimer.hisab.github.io
