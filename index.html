@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>পকেট হিসাব (v5.0) — স্মার্ট দৈনিক আয়-ব্যয়, বাজেট ও ডিজিটাল ক্যাশ মেমো</title>
+  <meta name="description" content="পকেট হিসাব — বাংলাদেশের জন্য তৈরি আধুনিক ব্যক্তিগত ও ব্যবসায়িক আয়-ব্যয়, মাসিক বাজেট প্ল্যানার, বাকির খাতা, লোন-কিস্তি এবং ডিজিটাল ক্যাশ মেমো অ্যাপ।" />
+
+  <!-- অ্যাপের আসল বাংলা ফন্ট: Baloo Da 2 & Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600;700;800&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== পকেট হিসাব অ্যাপের আসল লাইট ও ডার্ক কালার প্যালেট ===== */
+    :root {
+      --bg: #F5F8FA;
+      --surface: #EEF3F7;
+      --surface-elevated: #E3ECF2;
+      --card: #FFFFFF;
+      --primary: #0D8B62;
+      --primary-dark: #085C40;
+      --primary-container: #E8F8F0;
+      --primary-border: #9EE2BF;
+      --secondary: #1E5FA8;
+      --secondary-container: #EBF4FD;
+      --income: #0D8B62;
+      --income-bg: #ECF9F2;
+      --expense: #C43D3D;
+      --expense-bg: #FEF1F1;
+      --warning: #A8660C;
+      --warning-bg: #FFF7E3;
+      --warning-border: #E8C96B;
+      --ink: #18222D;
+      --muted: #4F5E6F;
+      --outline: #D0DCE5;
+      --memo-frame: #5A6D82;
+
+      /* প্যাস্টেল কার্ড থিম */
+      --sky-bg: #EEF5FD; --sky-bd: #B5D2F2; --sky-chip: #DCEBFC; --sky-tx: #1A56A3;
+      --mint-bg: #ECFAF2; --mint-bd: #9EE2BF; --mint-chip: #D4F4E3; --mint-tx: #0B7A4E;
+      --lav-bg: #F5F1FC; --lav-bd: #D1C3F0; --lav-chip: #E9E0FA; --lav-tx: #5E3CA6;
+      --amb-bg: #FFF9E6; --amb-bd: #EFD78E; --amb-chip: #FCEFBE; --amb-tx: #9B5E04;
+      --rose-bg: #FEF2F2; --rose-bd: #F0C2C2; --rose-chip: #FCE2E2; --rose-tx: #B83838;
+      --cyan-bg: #ECF9FA; --cyan-bd: #A8DFE6; --cyan-chip: #D7F2F5; --cyan-tx: #0E6E78;
+
+      --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 14px 36px rgba(13, 139, 98, 0.11);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0F151C;
+      --surface: #17202B;
+      --surface-elevated: #1F2B38;
+      --card: #151D26;
+      --primary: #4CC394;
+      --primary-dark: #D5F5E6;
+      --primary-container: #163026;
+      --primary-border: #285E45;
+      --secondary: #7CB4E8;
+      --secondary-container: #182A3E;
+      --income: #5CD0A1;
+      --income-bg: #142B22;
+      --expense: #EF8C8C;
+      --expense-bg: #301A1C;
+      --warning: #EBB765;
+      --warning-bg: #2E2414;
+      --warning-border: #664F24;
+      --ink: #EDF3F8;
+      --muted: #A2B3C4;
+      --outline: #2E3F50;
+      --memo-frame: #4E6278;
+
+      --sky-bg: #152232; --sky-bd: #2B4B70; --sky-chip: #1E324A; --sky-tx: #82B7F2;
+      --mint-bg: #142920; --mint-bd: #285E45; --mint-chip: #1C3D2E; --mint-tx: #6EE0AD;
+      --lav-bg: #211C30; --lav-bd: #493C73; --lav-chip: #2E2747; --lav-tx: #BAA6F2;
+      --amb-bg: #2B2314; --amb-bd: #664F24; --amb-chip: #3D311A; --amb-tx: #EBC36B;
+      --rose-bg: #2B1B1E; --rose-bd: #69383D; --rose-chip: #3E2428; --rose-tx: #F09898;
+      --cyan-bg: #14272B; --cyan-bd: #28575E; --cyan-chip: #1C3A40; --cyan-tx: #7AD2DC;
+
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.28);
+      --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    h1, h2, h3, h4, .display-font, .amount, .btn, .badge {
+      font-family: 'Baloo Da 2', sans-serif;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== নেভিগেশন বার ===== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .nav {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #0D8B62, #0A6E4E);
+      color: #FFFFFF;
+      display: grid;
+      place-items: center;
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 21px;
+      box-shadow: 0 6px 14px rgba(13, 139, 98, 0.28);
+    }
+
+    .brand-title {
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover { color: var(--primary); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1.5px solid var(--outline);
+      background: var(--card);
+      color: var(--ink);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .theme-btn:hover { transform: translateY(-1px); border-color: var(--primary); }
+
+    /* ===== বাটন ও ব্যাজ ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 15.5px;
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: #0D8B62;
+      color: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(13, 139, 98, 0.28);
+    }
+
+    .btn-primary:hover { background: #0A7350; }
+
+    .btn-outline {
+      background: var(--card);
+      color: var(--ink);
+      border-color: var(--outline);
+    }
+
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--primary-container);
+      border: 1.2px solid var(--primary-border);
+      color: var(--primary-dark);
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 13.5px;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    /* ===== হিরো সেকশন ===== */
+    .hero {
+      padding: 54px 0 64px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4.4vw, 50px);
+      line-height: 1.18;
+      font-weight: 800;
+      margin: 16px 0 14px;
+      letter-spacing: -0.2px;
+    }
+
+    .hero h1 span { color: var(--primary); }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .wallet-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 520px;
+    }
+
+    .wallet-mini {
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1.2px solid var(--outline);
+      background: var(--card);
+    }
+
+    .wallet-mini small { display: block; font-size: 12px; font-weight: 700; opacity: 0.85; }
+    .wallet-mini strong { display: block; font-family: 'Baloo Da 2', sans-serif; font-size: 15px; font-weight: 800; }
+
+    .w-cash { background: var(--sky-bg); border-color: var(--sky-bd); color: var(--sky-tx); }
+    .w-bkash { background: var(--lav-bg); border-color: var(--lav-bd); color: var(--lav-tx); }
+    .w-nagad { background: var(--cyan-bg); border-color: var(--cyan-bd); color: var(--cyan-tx); }
+    .w-bank { background: var(--amb-bg); border-color: var(--amb-bd); color: var(--amb-tx); }
+
+    /* ===== ফোন মকআপ (অ্যাপের ড্যাশবোর্ড প্রিভিউ) ===== */
+    .phone-frame {
+      background: var(--card);
+      border: 2px solid var(--outline);
+      border-radius: 30px;
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      max-width: 390px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .phone-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, #0D8B62 0%, #096B4B 100%);
+      color: #FFFFFF;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .balance-label { font-size: 12.5px; opacity: 0.9; font-weight: 600; }
+    .balance-val { font-family: 'Baloo Da 2', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.15; margin: 2px 0 10px; }
+
+    .balance-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .balance-pill {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      padding: 7px 10px;
+    }
+
+    .balance-pill small { display: block; font-size: 11px; opacity: 0.9; }
+    .balance-pill strong { font-family: 'Baloo Da 2', sans-serif; font-size: 15px; font-weight: 800; }
+
+    /* মাসিক বাজেট প্রোগ্রেস কার্ড */
+    .budget-preview {
+      background: var(--surface);
+      border: 1.2px solid var(--outline);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .bp-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .bp-title { font-family: 'Baloo Da 2', sans-serif; font-weight: 800; font-size: 14px; }
+
+    .warn-badge {
+      background: var(--warning-bg);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'Baloo Da 2', sans-serif;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--surface-elevated);
+      overflow: hidden;
+      margin: 5px 0 8px;
+    }
+
+    .bar-fill { height: 100%; border-radius: 999px; }
+    .bar-emerald { background: #0D8B62; }
+    .bar-amber { background: #D97706; }
+
+    .cat-mini-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* কুইক অ্যাকশন */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+    }
+
+    .qa-btn {
+      padding: 9px 10px;
+      border-radius: 12px;
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      text-align: center;
+      border: 1.2px solid transparent;
+    }
+
+    .qa-in { background: var(--income-bg); color: var(--income); border-color: var(--mint-bd); }
+    .qa-out { background: var(--expense-bg); color: var(--expense); border-color: var(--rose-bd); }
+    .qa-calc { background: var(--sky-bg); color: var(--sky-tx); border-color: var(--sky-bd); padding: 9px 13px; }
+
+    /* ===== সেকশন হেডার ===== */
+    section { padding: 54px 0; }
+
+    .sec-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 34px;
+    }
+
+    .sec-head h2 {
+      font-size: clamp(25px, 3.3vw, 36px);
+      font-weight: 800;
+      margin: 10px 0 8px;
+      line-height: 1.2;
+    }
+
+    .sec-head p { color: var(--muted); font-size: 16px; font-weight: 600; }
+
+    /* ===== ফিচার গ্রিড (প্যাস্টেল বক্স থিম) ===== */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .f-card {
+      border-radius: 20px;
+      padding: 20px;
+      border: 1.4px solid var(--outline);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .f-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .f-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .f-card h3 { font-size: 18.5px; font-weight: 800; margin-bottom: 6px; }
+    .f-card p { font-size: 14.5px; color: var(--muted); font-weight: 600; }
+
+    .f-mint { background: var(--mint-bg); border-color: var(--mint-bd); }
+    .f-mint .f-icon { background: var(--mint-chip); color: var(--mint-tx); }
+    .f-mint h3 { color: var(--mint-tx); }
+
+    .f-sky { background: var(--sky-bg); border-color: var(--sky-bd); }
+    .f-sky .f-icon { background: var(--sky-chip); color: var(--sky-tx); }
+    .f-sky h3 { color: var(--sky-tx); }
+
+    .f-lav { background: var(--lav-bg); border-color: var(--lav-bd); }
+    .f-lav .f-icon { background: var(--lav-chip); color: var(--lav-tx); }
+    .f-lav h3 { color: var(--lav-tx); }
+
+    .f-amb { background: var(--amb-bg); border-color: var(--amb-bd); }
+    .f-amb .f-icon { background: var(--amb-chip); color: var(--amb-tx); }
+    .f-amb h3 { color: var(--amb-tx); }
+
+    .f-rose { background: var(--rose-bg); border-color: var(--rose-bd); }
+    .f-rose .f-icon { background: var(--rose-chip); color: var(--rose-tx); }
+    .f-rose h3 { color: var(--rose-tx); }
+
+    .f-cyan { background: var(--cyan-bg); border-color: var(--cyan-bd); }
+    .f-cyan .f-icon { background: var(--cyan-chip); color: var(--cyan-tx); }
+    .f-cyan h3 { color: var(--cyan-tx); }
+
+    /* ===== ডিজিটাল ক্যাশ মেমো শোকেস ===== */
+    .memo-showcase {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 36px;
+      align-items: center;
+      background: var(--card);
+      border: 1.5px solid var(--outline);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .cash-memo-card {
+      background: #FCFDFE;
+      color: #0F172A;
+      border: 2px solid var(--memo-frame);
+      border-radius: 20px;
+      padding: 16px;
+      max-width: 390px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .memo-center { text-align: center; }
+    .memo-bismillah { font-size: 12px; font-weight: 700; color: #475569; }
+    .memo-brand { font-family: 'Baloo Da 2', sans-serif; font-size: 24px; font-weight: 800; color: #0F172A; line-height: 1.15; }
+    .memo-sub { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+
+    .memo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #E9F9EF;
+      border: 1.2px solid #6BC492;
+      color: #006B42;
+      padding: 3px 13px;
+      border-radius: 999px;
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 12.5px;
+      margin-bottom: 10px;
+    }
+
+    .memo-party {
+      background: #F8FAFC;
+      border: 1.2px solid #C2CEDB;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .memo-num-badge {
+      background: #008955;
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 2px 9px;
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .memo-strips {
+      background: #FFFFFF;
+      border: 1.2px solid #C2CEDB;
+      border-radius: 12px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .m-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 10px;
+      font-family: 'Baloo Da 2', sans-serif;
+      font-weight: 800;
+      font-size: 13.5px;
+      border: 1.2px solid;
+    }
+
+    .ms-neutral { background: #FCFDFE; border-color: #C2CEDB; color: #0F172A; }
+    .ms-rose { background: #FDEEEF; border-color: #F3AEB7; color: #C62828; }
+    .ms-sky { background: #EBF4FF; border-color: #559CF6; color: #1256B8; }
+    .ms-mint { background: #E9F9EF; border-color: #6BC492; color: #006B42; }
+    .ms-due { background: #FDEEEF; border-color: #E76B7A; color: #C62828; }
+
+    .memo-notice {
+      background: #FFF8E1;
+      border: 1.2px solid #E8C96B;
+      color: #8C5300;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .check-list {
+      list-style: none;
+      display: grid;
+      gap: 11px;
+      margin: 18px 0 22px;
+    }
+
+    .check-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .check-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      background: var(--primary-container);
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ===== ডাউনলোড সিটিএ ব্যানার ===== */
+    .cta-box {
+      background: linear-gradient(135deg, #0D8B62 0%, #096648 100%);
+      color: #FFFFFF;
+      border-radius: 26px;
+      padding: 40px 28px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .cta-box h2 { font-size: clamp(24px, 3.5vw, 36px); font-weight: 800; margin-bottom: 10px; }
+    .cta-box p { opacity: 0.92; max-width: 580px; margin: 0 auto 24px; font-size: 16px; font-weight: 600; }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn-white {
+      background: #FFFFFF;
+      color: #085C40;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+    }
+
+    .btn-ghost-white {
+      background: rgba(255, 255, 255, 0.14);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    footer {
+      border-top: 1px solid var(--outline);
+      padding: 26px 0 36px;
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ===== রেসপনসিভ ===== */
+    @media (max-width: 900px) {
+      .hero-grid, .memo-showcase { grid-template-columns: 1fr; }
+      .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .wallet-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .memo-showcase { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- হেডার -->
+  <header>
+    <div class="container nav">
+      <a href="#" class="brand">
+        <div class="brand-icon">৳</div>
+        <div>
+          <div class="brand-title">পকেট হিসাব</div>
+          <div class="brand-sub">ভার্সন ৫.০ • স্মার্ট ডিজিটাল খাতা</div>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">সুবিধাসমূহ</a>
+        <a href="#memo">ডিজিটাল মেমো</a>
+        <a href="#download">ডাউনলোড</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-btn" id="themeToggle" title="লাইট / ডার্ক মোড পরিবর্তন করুন" aria-label="থিম পরিবর্তন">🌙</button>
+        <a href="#download" class="btn btn-primary">APK ডাউনলোড</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- হিরো সেকশন -->
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="pill">
+            <span class="pill-dot"></span>
+            সম্পূর্ণ বাংলা • অ্যান্ড্রয়েড অ্যাপ (v5.0)
+          </span>
+          <h1>দৈনিক আয়-ব্যয়, বাজেট ও <span>ডিজিটাল ক্যাশ মেমো</span> এখন এক পকেটেই</h1>
+          <p>
+            ব্যক্তিগত ও ব্যবসায়িক সব হিসাব রাখুন একদম সহজে—ক্যাশ, বিকাশ, নগদ ও ব্যাংক ওয়ালেট ম্যানেজমেন্ট, স্মার্ট মাসিক বাজেট প্ল্যানার, বাকির খাতা, কিস্তি ট্র্যাকার এবং প্রিন্টযোগ্য ডিজিটাল ক্যাশ মেমোসহ।
+          </p>
+
+          <div class="hero-cta">
+            <!-- এখানে আপনার GitHub Release বা সরাসরি APK লিংক বসিয়ে দিন -->
+            <a href="APK_DOWNLOAD/app-debug.apk" class="btn btn-primary" download>
+              ⬇ ফ্রি APK ডাউনলোড করুন
+            </a>
+            <a href="#memo" class="btn btn-outline">
+              🧾 ডিজিটাল মেমো দেখুন
+            </a>
+          </div>
+
+          <div class="wallet-strip">
+            <div class="wallet-mini w-cash">
+              <small>💵 ক্যাশ</small>
+              <strong>৳ ১২,৫০০</strong>
+            </div>
+            <div class="wallet-mini w-bkash">
+              <small>📱 বিকাশ</small>
+              <strong>৳ ৮,৪৫০</strong>
+            </div>
+            <div class="wallet-mini w-nagad">
+              <small>📲 নগদ</small>
+              <strong>৳ ৫,২০০</strong>
+            </div>
+            <div class="wallet-mini w-bank">
+              <small>🏦 ব্যাংক</small>
+              <strong>৳ ৪৫,০০০</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- অ্যাপ ড্যাশবোর্ড প্রিভিউ -->
+        <div class="phone-frame" aria-label="পকেট হিসাব অ্যাপ প্রিভিউ">
+          <div class="phone-topbar">
+            <strong class="display-font" style="font-size: 16px;">পকেট হিসাব • ড্যাশবোর্ড</strong>
+            <span class="pill" style="padding: 3px 10px; font-size: 11.5px;">ক্লাউড সিঙ্ক ✓</span>
+          </div>
+
+          <div class="balance-card">
+            <div class="balance-label">মোট বর্তমান ব্যালেন্স</div>
+            <div class="balance-val">৳ ৭১,১৫০</div>
+            <div class="balance-row">
+              <div class="balance-pill">
+                <small>↑ চলতি মাসে আয়</small>
+                <strong>৳ ৪০,০০০</strong>
+              </div>
+              <div class="balance-pill">
+                <small>↓ চলতি মাসে খরচ</small>
+                <strong>৳ ২৭,৮৫০</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="budget-preview">
+            <div class="bp-head">
+              <span class="bp-title">মাসিক বাজেট প্রোগ্রেস</span>
+              <span class="warn-badge">⚠ ৮২% ব্যবহৃত</span>
+            </div>
+            <div class="cat-mini-row">
+              <span>মোট সীমা: ৳ ৩৪,০০০</span>
+              <span>বাকি: ৳ ৬,১৫০</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-amber" style="width: 82%;"></div>
+            </div>
+            <div class="cat-mini-row">
+              <span>🛒 বাজার ও মুদি</span>
+              <span>৳ ৮,২০০ / ৳ ১০,০০০</span>
+            </div>
+            <div class="bar-track" style="height: 6px; margin-bottom: 0;">
+              <div class="bar-fill bar-emerald" style="width: 82%;"></div>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <div class="qa-btn qa-in">+ টাকা জমা</div>
+            <div class="qa-btn qa-out">− টাকা খরচ</div>
+            <div class="qa-btn qa-calc">🧮</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ফিচারসমূহ -->
+    <section id="features">
+      <div class="container">
+        <div class="sec-head">
+          <span class="pill"><span class="pill-dot"></span>মূল সুবিধাসমূহ</span>
+          <h2>এক অ্যাপেই আপনার সব আর্থিক হিসাব-নিকাশ</h2>
+          <p>বাংলাদেশের দৈনন্দিন প্রয়োজন মাথায় রেখে চোখ-জুড়ানো প্যাস্টেল ডিজাইন ও সহজ বাংলা ইন্টারফেস।</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="f-card f-mint">
+            <div class="f-icon">📊</div>
+            <h3>স্মার্ট মাসিক বাজেট প্ল্যানার</h3>
+            <p>মোট মাসিক আয় দিয়ে ১ ট্যাপেই ৮৫% স্মার্ট সাজেশনে খাতভিত্তিক বাজেট সেট করুন এবং ৮০% পেরোলেই সতর্কতা পান।</p>
+          </div>
+
+          <div class="f-card f-sky">
+            <div class="f-icon">👛</div>
+            <h3>৪টি ওয়ালেট ও ট্রান্সফার</h3>
+            <p>ক্যাশ, বিকাশ, নগদ ও ব্যাংক—প্রতিটির আলাদা ব্যালেন্স দেখুন এবং মোট আয়-ব্যয় না বদলে ওয়ালেট ট্রান্সফার করুন।</p>
+          </div>
+
+          <div class="f-card f-lav">
+            <div class="f-icon">🧾</div>
+            <h3>ডিজিটাল ক্যাশ মেমো</h3>
+            <p>বিসমিল্লাহ হেডার, মেমো নম্বর ও ৫ রঙিন হিসাব স্ট্রিপসহ হুবহু মেমো ছবি গ্যালারিতে ডাউনলোড, শেয়ার ও প্রিন্ট করুন।</p>
+          </div>
+
+          <div class="f-card f-amb">
+            <div class="f-icon">📒</div>
+            <h3>বাকির খাতা ও লোন কিস্তি</h3>
+            <p>পাওনা-দেনা, লোন, মাসিক কিস্তি ও সঞ্চয়ের নিখুঁত হিসাব রাখুন আলাদা পার্টি ও লেনদেন ইতিহাসসহ।</p>
+          </div>
+
+          <div class="f-card f-rose">
+            <div class="f-icon">🔔</div>
+            <h3>বিল ও ঋণ রিমাইন্ডার</h3>
+            <p>নির্ধারিত তারিখের আগেই বিল, কিস্তি ও পাওনা আদায়ের স্মার্ট রিমাইন্ডার অ্যালার্ট নোটিফিকেশন পান।</p>
+          </div>
+
+          <div class="f-card f-cyan">
+            <div class="f-icon">🔒</div>
+            <h3>ক্লাউড সিঙ্ক ও নিরাপত্তা</h3>
+            <p>গুগল সাইন-ইনের মাধ্যমে নিরাপদ ক্লাউড ব্যাকআপ, বায়োমেট্রিক লক, ক্যালকুলেটর এবং লাইট/ডার্ক মোড সুবিধা।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ডিজিটাল ক্যাশ মেমো প্রিভিউ -->
+    <section id="memo">
+      <div class="container">
+        <div class="memo-showcase">
+          <div>
+            <span class="pill"><span class="pill-dot"></span>প্রফেশনাল রসিদ</span>
+            <h2 style="font-size: clamp(24px, 3vw, 34px); margin: 12px 0 10px; line-height: 1.2;">
+              অ্যাপে যেমন দেখায়, ডাউনলোড করলেও হুবহু তেমনই ডিজিটাল ক্যাশ মেমো
+            </h2>
+            <p style="color: var(--muted); font-weight: 600;">
+              গ্রাহক বা পার্টিকে হোয়াটসঅ্যাপ, মেসেঞ্জার বা প্রিন্টারে পাঠানোর জন্য তৈরি পরিচ্ছন্ন ও নির্ভুল বাংলা ক্যাশ মেমো।
+            </p>
+
+            <ul class="check-list">
+              <li><span class="check-dot">✓</span> বিসমিল্লাহ হেডার, সবুজ মেমো নম্বর (#) ব্যাজ ও বাংলা তারিখ</li>
+              <li><span class="check-dot">✓</span> ৫টি আলাদা রঙের হিসাব স্ট্রিপ—মূল্য, পূর্বের জের, মোট বিল, নগদ জমা ও বর্তমান বাকি</li>
+              <li><span class="check-dot">✓</span> ১ ট্যাপে গ্যালারিতে হাই-রেজোলিউশন PNG ডাউনলোড, ছবি শেয়ার ও PDF প্রিন্ট</li>
+            </ul>
+
+            <a href="#download" class="btn btn-primary">এখনই ব্যবহার শুরু করুন →</a>
+          </div>
+
+          <!-- মেমো কার্ডের আসল ডিজাইন -->
+          <div class="cash-memo-card">
+            <div class="memo-center">
+              <div class="memo-bismillah">বিসমিল্লাহির রাহমানির রাহিম</div>
+              <div class="memo-brand">পকেট হিসাব</div>
+              <div class="memo-sub">পাওনা হিসাবের মেমো • ডিজিটাল খাতা</div>
+              <div class="memo-pill">
+                <span style="width:7px;height:7px;border-radius:50%;background:#008955;display:inline-block;"></span>
+                ক্যাশ মেমো / চালান
+              </div>
+            </div>
+
+            <div class="memo-party">
+              <div>
+                <div style="font-size:11px;font-weight:700;color:#475569;">পার্টি / হিসাবের নাম</div>
+                <div class="display-font" style="font-size:18px;font-weight:800;line-height:1.2;">রহিম ট্রেডার্স</div>
+                <div style="font-size:11.5px;font-weight:700;color:#334155;">মোবাইল: ০১৭১২-৩৪৫৬৭৮</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-bottom:4px;">
+                  <span style="font-size:11.5px;font-weight:700;color:#475569;">মেমো</span>
+                  <span class="memo-num-badge">#০৮</span>
+                </div>
+                <div class="display-font" style="font-size:12px;font-weight:800;">১৯ নভেম্বর, ২০২৬</div>
+              </div>
+            </div>
+
+            <div class="memo-strips">
+              <div class="m-strip ms-neutral"><span>সর্বশেষ লেনদেন মূল্য</span><span>৳ ১৫,০০০</span></div>
+              <div class="m-strip ms-rose"><span>পূর্বের বাকি (জের)</span><span>+৳ ৮,৫০০</span></div>
+              <div class="m-strip ms-sky"><span>সর্বমোট দাবি বিল</span><span>৳ ২৩,৫০০</span></div>
+              <div class="m-strip ms-mint"><span>নগদ জমা / পরিশোধ</span><span>-৳ ১০,০০০</span></div>
+              <div class="m-strip ms-due"><span>বর্তমান বাকি (দাবি)</span><span>৳ ১৩,৫০০</span></div>
+            </div>
+
+            <div class="memo-notice">
+              ⚠ সতর্কতা: হিসাব ও লেনদেন ভালো করে দেখে নিন। কোনো গরমিল থাকলে সাথে সাথে জানাবেন।
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ডাউনলোড সেকশন -->
+    <section id="download">
+      <div class="container">
+        <div class="cta-box">
+          <h2>পকেট হিসাব (v5.0) ডাউনলোড করুন</h2>
+          <p>
+            আপনার অ্যান্ড্রয়েড ফোনে ইনস্টল করে আজ থেকেই শুরু করুন নির্ভুল আয়-ব্যয়, বাজেট পরিকল্পনা ও ডিজিটাল ক্যাশ মেমো ব্যবস্থাপনা।
+          </p>
+          <div class="cta-actions">
+            <!-- প্রয়োজনে এখানে আপনার GitHub Releases APK লিংক দিন -->
+            <a href="APK_DOWNLOAD/app-debug.apk" class="btn btn-white" download>
+              ⬇ Android APK ডাউনলোড (v5.0)
+            </a>
+            <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost-white">
+              ★ GitHub রিপোজিটরি দেখুন
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © ২০২৬ <strong>পকেট হিসাব</strong> — বাংলাদেশের জন্য ভালোবাসায় তৈরি স্মার্ট হিসাব অ্যাপ।
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('pocket_hisab_theme');
+    if (savedTheme) {
+      root.setAttribute('data-theme', savedTheme);
+      toggleBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+    toggleBtn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('pocket_hisab_theme', next);
+      toggleBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+    });
+  </script>
+</body>
+</html>
