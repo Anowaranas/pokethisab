@@ -1,691 +1,319 @@
 <!DOCTYPE html>
 <html lang="bn" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>পকেট হিসাব (v5.0) — স্মার্ট দৈনিক আয়-ব্যয়, বাজেট ও ডিজিটাল ক্যাশ মেমো</title>
-  <meta name="description" content="পকেট হিসাব — বাংলাদেশের জন্য তৈরি আধুনিক ব্যক্তিগত ও ব্যবসায়িক আয়-ব্যয়, মাসিক বাজেট প্ল্যানার, বাকির খাতা, লোন-কিস্তি এবং ডিজিটাল ক্যাশ মেমো অ্যাপ।" />
-
-  <!-- অ্যাপের আসল বাংলা ফন্ট: Baloo Da 2 & Hind Siliguri -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@600;700;800&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet" />
-
-  <style>
-    /* ===== পকেট হিসাব অ্যাপের আসল লাইট ও ডার্ক কালার প্যালেট ===== */
-    :root {
-      --bg: #F5F8FA;
-      --surface: #EEF3F7;
-      --surface-elevated: #E3ECF2;
-      --card: #FFFFFF;
-      --primary: #0D8B62;
-      --primary-dark: #085C40;
-      --primary-container: #E8F8F0;
-      --primary-border: #9EE2BF;
-      --secondary: #1E5FA8;
-      --secondary-container: #EBF4FD;
-      --income: #0D8B62;
-      --income-bg: #ECF9F2;
-      --expense: #C43D3D;
-      --expense-bg: #FEF1F1;
-      --warning: #A8660C;
-      --warning-bg: #FFF7E3;
-      --warning-border: #E8C96B;
-      --ink: #18222D;
-      --muted: #4F5E6F;
-      --outline: #D0DCE5;
-      --memo-frame: #5A6D82;
-
-      /* প্যাস্টেল কার্ড থিম */
-      --sky-bg: #EEF5FD; --sky-bd: #B5D2F2; --sky-chip: #DCEBFC; --sky-tx: #1A56A3;
-      --mint-bg: #ECFAF2; --mint-bd: #9EE2BF; --mint-chip: #D4F4E3; --mint-tx: #0B7A4E;
-      --lav-bg: #F5F1FC; --lav-bd: #D1C3F0; --lav-chip: #E9E0FA; --lav-tx: #5E3CA6;
-      --amb-bg: #FFF9E6; --amb-bd: #EFD78E; --amb-chip: #FCEFBE; --amb-tx: #9B5E04;
-      --rose-bg: #FEF2F2; --rose-bd: #F0C2C2; --rose-chip: #FCE2E2; --rose-tx: #B83838;
-      --cyan-bg: #ECF9FA; --cyan-bd: #A8DFE6; --cyan-chip: #D7F2F5; --cyan-tx: #0E6E78;
-
-      --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.05);
-      --shadow-md: 0 14px 36px rgba(13, 139, 98, 0.11);
-    }
-
-    [data-theme="dark"] {
-      --bg: #0F151C;
-      --surface: #17202B;
-      --surface-elevated: #1F2B38;
-      --card: #151D26;
-      --primary: #4CC394;
-      --primary-dark: #D5F5E6;
-      --primary-container: #163026;
-      --primary-border: #285E45;
-      --secondary: #7CB4E8;
-      --secondary-container: #182A3E;
-      --income: #5CD0A1;
-      --income-bg: #142B22;
-      --expense: #EF8C8C;
-      --expense-bg: #301A1C;
-      --warning: #EBB765;
-      --warning-bg: #2E2414;
-      --warning-border: #664F24;
-      --ink: #EDF3F8;
-      --muted: #A2B3C4;
-      --outline: #2E3F50;
-      --memo-frame: #4E6278;
-
-      --sky-bg: #152232; --sky-bd: #2B4B70; --sky-chip: #1E324A; --sky-tx: #82B7F2;
-      --mint-bg: #142920; --mint-bd: #285E45; --mint-chip: #1C3D2E; --mint-tx: #6EE0AD;
-      --lav-bg: #211C30; --lav-bd: #493C73; --lav-chip: #2E2747; --lav-tx: #BAA6F2;
-      --amb-bg: #2B2314; --amb-bd: #664F24; --amb-chip: #3D311A; --amb-tx: #EBC36B;
-      --rose-bg: #2B1B1E; --rose-bd: #69383D; --rose-chip: #3E2428; --rose-tx: #F09898;
-      --cyan-bg: #14272B; --cyan-bd: #28575E; --cyan-chip: #1C3A40; --cyan-tx: #7AD2DC;
-
-      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.28);
-      --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.42);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Hind Siliguri', sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      transition: background 0.25s ease, color 0.25s ease;
-    }
-
-    h1, h2, h3, h4, .display-font, .amount, .btn, .badge {
-      font-family: 'Baloo Da 2', sans-serif;
-    }
-
-    a { text-decoration: none; color: inherit; }
-
-    .container {
-      width: 100%;
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    /* ===== নেভিগেশন বার ===== */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(14px);
-      background: color-mix(in srgb, var(--bg) 86%, transparent);
-      border-bottom: 1px solid var(--outline);
-    }
-
-    .nav {
-      height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #0D8B62, #0A6E4E);
-      color: #FFFFFF;
-      display: grid;
-      place-items: center;
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 21px;
-      box-shadow: 0 6px 14px rgba(13, 139, 98, 0.28);
-    }
-
-    .brand-title {
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 20px;
-      line-height: 1.1;
-    }
-
-    .brand-sub {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--muted);
-    }
-
-    .nav-links a:hover { color: var(--primary); }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .theme-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 1.5px solid var(--outline);
-      background: var(--card);
-      color: var(--ink);
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-      transition: transform 0.15s ease, border-color 0.2s ease;
-    }
-
-    .theme-btn:hover { transform: translateY(-1px); border-color: var(--primary); }
-
-    /* ===== বাটন ও ব্যাজ ===== */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 11px 20px;
-      border-radius: 14px;
-      font-weight: 800;
-      font-size: 15.5px;
-      cursor: pointer;
-      border: 1.5px solid transparent;
-      transition: transform 0.16s ease, box-shadow 0.2s ease, background 0.2s ease;
-    }
-
-    .btn:hover { transform: translateY(-2px); }
-
-    .btn-primary {
-      background: #0D8B62;
-      color: #FFFFFF;
-      box-shadow: 0 8px 20px rgba(13, 139, 98, 0.28);
-    }
-
-    .btn-primary:hover { background: #0A7350; }
-
-    .btn-outline {
-      background: var(--card);
-      color: var(--ink);
-      border-color: var(--outline);
-    }
-
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: var(--primary-container);
-      border: 1.2px solid var(--primary-border);
-      color: var(--primary-dark);
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 13.5px;
-    }
-
-    .pill-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary);
-    }
-
-    /* ===== হিরো সেকশন ===== */
-    .hero {
-      padding: 54px 0 64px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .hero h1 {
-      font-size: clamp(32px, 4.4vw, 50px);
-      line-height: 1.18;
-      font-weight: 800;
-      margin: 16px 0 14px;
-      letter-spacing: -0.2px;
-    }
-
-    .hero h1 span { color: var(--primary); }
-
-    .hero p {
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 540px;
-      margin-bottom: 24px;
-      font-weight: 600;
-    }
-
-    .hero-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 26px;
-    }
-
-    .wallet-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      max-width: 520px;
-    }
-
-    .wallet-mini {
-      padding: 10px 10px;
-      border-radius: 14px;
-      border: 1.2px solid var(--outline);
-      background: var(--card);
-    }
-
-    .wallet-mini small { display: block; font-size: 12px; font-weight: 700; opacity: 0.85; }
-    .wallet-mini strong { display: block; font-family: 'Baloo Da 2', sans-serif; font-size: 15px; font-weight: 800; }
-
-    .w-cash { background: var(--sky-bg); border-color: var(--sky-bd); color: var(--sky-tx); }
-    .w-bkash { background: var(--lav-bg); border-color: var(--lav-bd); color: var(--lav-tx); }
-    .w-nagad { background: var(--cyan-bg); border-color: var(--cyan-bd); color: var(--cyan-tx); }
-    .w-bank { background: var(--amb-bg); border-color: var(--amb-bd); color: var(--amb-tx); }
-
-    /* ===== ফোন মকআপ (অ্যাপের ড্যাশবোর্ড প্রিভিউ) ===== */
-    .phone-frame {
-      background: var(--card);
-      border: 2px solid var(--outline);
-      border-radius: 30px;
-      padding: 16px;
-      box-shadow: var(--shadow-md);
-      max-width: 390px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .phone-topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .balance-card {
-      background: linear-gradient(135deg, #0D8B62 0%, #096B4B 100%);
-      color: #FFFFFF;
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
-    }
-
-    .balance-label { font-size: 12.5px; opacity: 0.9; font-weight: 600; }
-    .balance-val { font-family: 'Baloo Da 2', sans-serif; font-size: 30px; font-weight: 800; line-height: 1.15; margin: 2px 0 10px; }
-
-    .balance-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .balance-pill {
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      border-radius: 12px;
-      padding: 7px 10px;
-    }
-
-    .balance-pill small { display: block; font-size: 11px; opacity: 0.9; }
-    .balance-pill strong { font-family: 'Baloo Da 2', sans-serif; font-size: 15px; font-weight: 800; }
-
-    /* মাসিক বাজেট প্রোগ্রেস কার্ড */
-    .budget-preview {
-      background: var(--surface);
-      border: 1.2px solid var(--outline);
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-
-    .bp-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      gap: 8px;
-    }
-
-    .bp-title { font-family: 'Baloo Da 2', sans-serif; font-weight: 800; font-size: 14px; }
-
-    .warn-badge {
-      background: var(--warning-bg);
-      color: var(--warning);
-      border: 1px solid var(--warning-border);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      font-family: 'Baloo Da 2', sans-serif;
-    }
-
-    .bar-track {
-      width: 100%;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--surface-elevated);
-      overflow: hidden;
-      margin: 5px 0 8px;
-    }
-
-    .bar-fill { height: 100%; border-radius: 999px; }
-    .bar-emerald { background: #0D8B62; }
-    .bar-amber { background: #D97706; }
-
-    .cat-mini-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-    }
-
-    /* কুইক অ্যাকশন */
-    .quick-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 8px;
-    }
-
-    .qa-btn {
-      padding: 9px 10px;
-      border-radius: 12px;
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 13px;
-      text-align: center;
-      border: 1.2px solid transparent;
-    }
-
-    .qa-in { background: var(--income-bg); color: var(--income); border-color: var(--mint-bd); }
-    .qa-out { background: var(--expense-bg); color: var(--expense); border-color: var(--rose-bd); }
-    .qa-calc { background: var(--sky-bg); color: var(--sky-tx); border-color: var(--sky-bd); padding: 9px 13px; }
-
-    /* ===== সেকশন হেডার ===== */
-    section { padding: 54px 0; }
-
-    .sec-head {
-      text-align: center;
-      max-width: 680px;
-      margin: 0 auto 34px;
-    }
-
-    .sec-head h2 {
-      font-size: clamp(25px, 3.3vw, 36px);
-      font-weight: 800;
-      margin: 10px 0 8px;
-      line-height: 1.2;
-    }
-
-    .sec-head p { color: var(--muted); font-size: 16px; font-weight: 600; }
-
-    /* ===== ফিচার গ্রিড (প্যাস্টেল বক্স থিম) ===== */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .f-card {
-      border-radius: 20px;
-      padding: 20px;
-      border: 1.4px solid var(--outline);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .f-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .f-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-
-    .f-card h3 { font-size: 18.5px; font-weight: 800; margin-bottom: 6px; }
-    .f-card p { font-size: 14.5px; color: var(--muted); font-weight: 600; }
-
-    .f-mint { background: var(--mint-bg); border-color: var(--mint-bd); }
-    .f-mint .f-icon { background: var(--mint-chip); color: var(--mint-tx); }
-    .f-mint h3 { color: var(--mint-tx); }
-
-    .f-sky { background: var(--sky-bg); border-color: var(--sky-bd); }
-    .f-sky .f-icon { background: var(--sky-chip); color: var(--sky-tx); }
-    .f-sky h3 { color: var(--sky-tx); }
-
-    .f-lav { background: var(--lav-bg); border-color: var(--lav-bd); }
-    .f-lav .f-icon { background: var(--lav-chip); color: var(--lav-tx); }
-    .f-lav h3 { color: var(--lav-tx); }
-
-    .f-amb { background: var(--amb-bg); border-color: var(--amb-bd); }
-    .f-amb .f-icon { background: var(--amb-chip); color: var(--amb-tx); }
-    .f-amb h3 { color: var(--amb-tx); }
-
-    .f-rose { background: var(--rose-bg); border-color: var(--rose-bd); }
-    .f-rose .f-icon { background: var(--rose-chip); color: var(--rose-tx); }
-    .f-rose h3 { color: var(--rose-tx); }
-
-    .f-cyan { background: var(--cyan-bg); border-color: var(--cyan-bd); }
-    .f-cyan .f-icon { background: var(--cyan-chip); color: var(--cyan-tx); }
-    .f-cyan h3 { color: var(--cyan-tx); }
-
-    /* ===== ডিজিটাল ক্যাশ মেমো শোকেস ===== */
-    .memo-showcase {
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 36px;
-      align-items: center;
-      background: var(--card);
-      border: 1.5px solid var(--outline);
-      border-radius: 26px;
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .cash-memo-card {
-      background: #FCFDFE;
-      color: #0F172A;
-      border: 2px solid var(--memo-frame);
-      border-radius: 20px;
-      padding: 16px;
-      max-width: 390px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .memo-center { text-align: center; }
-    .memo-bismillah { font-size: 12px; font-weight: 700; color: #475569; }
-    .memo-brand { font-family: 'Baloo Da 2', sans-serif; font-size: 24px; font-weight: 800; color: #0F172A; line-height: 1.15; }
-    .memo-sub { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
-
-    .memo-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #E9F9EF;
-      border: 1.2px solid #6BC492;
-      color: #006B42;
-      padding: 3px 13px;
-      border-radius: 999px;
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 12.5px;
-      margin-bottom: 10px;
-    }
-
-    .memo-party {
-      background: #F8FAFC;
-      border: 1.2px solid #C2CEDB;
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .memo-num-badge {
-      background: #008955;
-      color: #FFFFFF;
-      border-radius: 8px;
-      padding: 2px 9px;
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    .memo-strips {
-      background: #FFFFFF;
-      border: 1.2px solid #C2CEDB;
-      border-radius: 12px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .m-strip {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 7px 11px;
-      border-radius: 10px;
-      font-family: 'Baloo Da 2', sans-serif;
-      font-weight: 800;
-      font-size: 13.5px;
-      border: 1.2px solid;
-    }
-
-    .ms-neutral { background: #FCFDFE; border-color: #C2CEDB; color: #0F172A; }
-    .ms-rose { background: #FDEEEF; border-color: #F3AEB7; color: #C62828; }
-    .ms-sky { background: #EBF4FF; border-color: #559CF6; color: #1256B8; }
-    .ms-mint { background: #E9F9EF; border-color: #6BC492; color: #006B42; }
-    .ms-due { background: #FDEEEF; border-color: #E76B7A; color: #C62828; }
-
-    .memo-notice {
-      background: #FFF8E1;
-      border: 1.2px solid #E8C96B;
-      color: #8C5300;
-      border-radius: 10px;
-      padding: 7px 10px;
-      font-size: 11.5px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    .check-list {
-      list-style: none;
-      display: grid;
-      gap: 11px;
-      margin: 18px 0 22px;
-    }
-
-    .check-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 15.5px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .check-dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 8px;
-      background: var(--primary-container);
-      color: var(--primary);
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* ===== ডাউনলোড সিটিএ ব্যানার ===== */
-    .cta-box {
-      background: linear-gradient(135deg, #0D8B62 0%, #096648 100%);
-      color: #FFFFFF;
-      border-radius: 26px;
-      padding: 40px 28px;
-      text-align: center;
-      box-shadow: var(--shadow-md);
-    }
-
-    .cta-box h2 { font-size: clamp(24px, 3.5vw, 36px); font-weight: 800; margin-bottom: 10px; }
-    .cta-box p { opacity: 0.92; max-width: 580px; margin: 0 auto 24px; font-size: 16px; font-weight: 600; }
-
-    .cta-actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn-white {
-      background: #FFFFFF;
-      color: #085C40;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
-    }
-
-    .btn-ghost-white {
-      background: rgba(255, 255, 255, 0.14);
-      color: #FFFFFF;
-      border-color: rgba(255, 255, 255, 0.35);
-    }
-
-    footer {
-      border-top: 1px solid var(--outline);
-      padding: 26px 0 36px;
-      margin-top: 40px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    /* ===== রেসপনসিভ ===== */
-    @media (max-width: 900px) {
-      .hero-grid, .memo-showcase { grid-template-columns: 1fr; }
-      .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .nav-links { display: none; }
-    }
-
-    @media (max-width: 560px) {
-      .feature-grid { grid-template-columns: 1fr; }
-      .wallet-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .memo-showcase { padding: 18px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>পকেট হিসাব (v5.0) — স্মার্ট দৈনিক আয়-ব্যয়, বাজেট ও ডিজিটাল ক্যাশ মেমো</title>
+<meta name="description" content="পকেট হিসাব — সম্পূর্ণ বাংলা অ্যান্ড্রয়েড অ্যাপ। দৈনিক আয়-ব্যয়, স্মার্ট মাসিক বাজেট, বাকির খাতা, কিস্তি ট্র্যাকার ও প্রিন্টযোগ্য ডিজিটাল ক্যাশ মেমো এখন এক পকেটেই।">
+<meta name="theme-color" content="#0ea472">
+<meta property="og:title" content="পকেট হিসাব (v5.0) — স্মার্ট ডিজিটাল খাতা">
+<meta property="og:description" content="দৈনিক আয়-ব্যয়, বাজেট ও ডিজিটাল ক্যাশ মেমো এখন এক পকেটেই। ফ্রি APK ডাউনলোড করুন।">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230ea472'/><text x='50' y='70' font-size='58' text-anchor='middle' fill='white' font-weight='bold'>৳</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Baloo+Da+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ ডিজাইন টোকেন ============ */
+  :root{
+    --bg:#f4f8f6;
+    --bg-soft:#eaf3ee;
+    --surface:#ffffff;
+    --surface-2:#fbfdfc;
+    --text:#0c1f18;
+    --muted:#5b7268;
+    --border:#dcebe2;
+    --brand:#0ea472;
+    --brand-2:#0b8a5f;
+    --brand-soft:#e2f5ec;
+    --accent:#f5a623;
+    --grad:linear-gradient(120deg,#0ea472 0%,#12b981 45%,#0e9bb5 100%);
+    --grad-warm:linear-gradient(120deg,#0ea472,#0e9bb5);
+    --shadow-sm:0 2px 10px rgba(10,60,40,.06);
+    --shadow-md:0 12px 32px -12px rgba(10,60,40,.18);
+    --shadow-lg:0 30px 60px -20px rgba(8,50,35,.28);
+    --header-bg:rgba(255,255,255,.78);
+    --phone-bg:#ffffff;
+    --radius:20px;
+  }
+  [data-theme="dark"]{
+    --bg:#081410;
+    --bg-soft:#0b1e17;
+    --surface:#0f241b;
+    --surface-2:#122a20;
+    --text:#e8f5ee;
+    --muted:#9db8ab;
+    --border:#1d3a2d;
+    --brand-soft:#123527;
+    --shadow-sm:0 2px 10px rgba(0,0,0,.3);
+    --shadow-md:0 12px 32px -12px rgba(0,0,0,.5);
+    --shadow-lg:0 30px 60px -20px rgba(0,0,0,.65);
+    --header-bg:rgba(10,26,19,.78);
+    --phone-bg:#0d2018;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Hind Siliguri',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.65;
+    overflow-x:hidden;
+    transition:background .4s ease,color .4s ease;
+  }
+  ::selection{background:var(--brand);color:#fff}
+  .display-font{font-family:'Baloo Da 2','Hind Siliguri',sans-serif}
+  .container{max-width:1140px;margin:0 auto;padding:0 22px}
+  section{padding:92px 0;position:relative}
+  h1,h2,h3{font-family:'Baloo Da 2','Hind Siliguri',sans-serif;line-height:1.25}
+  a{text-decoration:none;color:inherit}
+  img{max-width:100%}
+
+  /* ============ হেডার ============ */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:var(--header-bg);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:13px;padding-bottom:13px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{
+    width:46px;height:46px;border-radius:14px;background:var(--grad);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo Da 2',sans-serif;font-size:24px;font-weight:800;
+    box-shadow:0 8px 18px -6px rgba(14,164,114,.55);
+  }
+  .brand-title{font-family:'Baloo Da 2',sans-serif;font-weight:800;font-size:20px;line-height:1.1}
+  .brand-sub{font-size:12px;color:var(--muted);font-weight:600}
+  .nav-links{display:flex;gap:30px}
+  .nav-links a{font-weight:600;color:var(--muted);position:relative;padding:4px 0;transition:color .25s}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:2.5px;border-radius:99px;background:var(--grad);transition:width .3s ease}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a:hover::after{width:100%}
+  .nav-actions{display:flex;align-items:center;gap:12px}
+  .theme-btn{
+    width:42px;height:42px;border-radius:50%;border:1px solid var(--border);
+    background:var(--surface);font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .3s ease,box-shadow .3s ease;box-shadow:var(--shadow-sm);
+  }
+  .theme-btn:hover{transform:rotate(20deg) scale(1.08)}
+
+  /* ============ বোতাম ============ */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 26px;border-radius:99px;font-weight:700;font-size:16px;
+    transition:transform .25s ease,box-shadow .25s ease;white-space:nowrap;
+  }
+  .btn-primary{background:var(--grad);color:#fff;box-shadow:0 12px 24px -8px rgba(14,164,114,.55)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:0 18px 32px -8px rgba(14,164,114,.6)}
+  .btn-outline{border:2px solid var(--border);background:var(--surface);color:var(--text)}
+  .btn-outline:hover{transform:translateY(-3px);border-color:var(--brand);color:var(--brand-2)}
+  .btn-white{background:#fff;color:#0a5c40;box-shadow:0 12px 24px -10px rgba(0,0,0,.35)}
+  .btn-white:hover{transform:translateY(-3px)}
+  .btn-ghost-white{border:2px solid rgba(255,255,255,.55);color:#fff;background:rgba(255,255,255,.08)}
+  .btn-ghost-white:hover{transform:translateY(-3px);background:rgba(255,255,255,.18)}
+
+  /* ============ পিল ব্যাজ ============ */
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--brand-soft);color:var(--brand-2);
+    font-size:13.5px;font-weight:700;padding:6px 14px;border-radius:99px;
+    border:1px solid var(--border);
+  }
+  [data-theme="dark"] .pill{color:#4ade9e}
+  .pill-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(14,164,114,.45)}70%{box-shadow:0 0 0 8px rgba(14,164,114,0)}100%{box-shadow:0 0 0 0 rgba(14,164,114,0)}}
+
+  /* ============ হিরো ============ */
+  .hero{padding:76px 0 96px;overflow:hidden}
+  .hero::before,.hero::after{
+    content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;pointer-events:none;
+  }
+  .hero::before{width:480px;height:480px;background:#34d399;top:-160px;right:-120px;animation:drift 14s ease-in-out infinite alternate}
+  .hero::after{width:420px;height:420px;background:#38bdf8;bottom:-180px;left:-140px;animation:drift 18s ease-in-out infinite alternate-reverse}
+  [data-theme="dark"] .hero::before,[data-theme="dark"] .hero::after{opacity:.22}
+  @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-40px,36px) scale(1.12)}}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center;position:relative;z-index:1}
+  .hero h1{font-size:clamp(32px,4.6vw,52px);font-weight:800;margin:20px 0 16px}
+  .hero h1 span{
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{font-size:17.5px;color:var(--muted);font-weight:500;max-width:540px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin:30px 0 34px}
+
+  /* ওয়ালেট স্ট্রিপ */
+  .wallet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:560px}
+  .wallet-mini{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:12px 14px;box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease;
+  }
+  .wallet-mini:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+  .wallet-mini small{display:block;font-size:12.5px;color:var(--muted);font-weight:700}
+  .wallet-mini strong{font-family:'Baloo Da 2',sans-serif;font-size:17px}
+  .w-cash{border-top:3px solid #22c55e}.w-bkash{border-top:3px solid #e2136e}
+  .w-nagad{border-top:3px solid #f6921e}.w-bank{border-top:3px solid #2563eb}
+
+  /* ফোন প্রিভিউ */
+  .phone-frame{
+    background:var(--phone-bg);border:1px solid var(--border);border-radius:34px;
+    padding:22px;box-shadow:var(--shadow-lg);max-width:430px;margin:0 auto;width:100%;
+    animation:floaty 6s ease-in-out infinite;position:relative;
+  }
+  .phone-frame::before{
+    content:"";position:absolute;inset:-2px;border-radius:36px;z-index:-1;
+    background:var(--grad);opacity:.35;filter:blur(18px);
+  }
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .phone-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .balance-card{
+    background:var(--grad);border-radius:22px;color:#fff;padding:20px;
+    box-shadow:0 16px 30px -12px rgba(11,138,95,.55);margin-bottom:16px;
+  }
+  .balance-label{font-size:13px;font-weight:600;opacity:.9}
+  .balance-val{font-family:'Baloo Da 2',sans-serif;font-size:36px;font-weight:800;line-height:1.15;margin:2px 0 14px}
+  .balance-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .balance-pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:9px 12px}
+  .balance-pill small{display:block;font-size:11.5px;font-weight:600;opacity:.92}
+  .balance-pill strong{font-family:'Baloo Da 2',sans-serif;font-size:16.5px}
+  .budget-preview{background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px}
+  .bp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .bp-title{font-weight:700;font-size:14.5px}
+  .warn-badge{background:#fef3c7;color:#b45309;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px}
+  [data-theme="dark"] .warn-badge{background:#3a2c07;color:#fbbf24}
+  .cat-mini-row{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--muted);margin:8px 0 6px}
+  .bar-track{height:9px;background:var(--bg-soft);border-radius:99px;overflow:hidden;margin-bottom:12px;border:1px solid var(--border)}
+  .bar-fill{height:100%;border-radius:99px;transform-origin:left;animation:grow 1.4s .3s ease both}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .bar-amber{background:linear-gradient(90deg,#f59e0b,#f97316)}
+  .bar-emerald{background:linear-gradient(90deg,#10b981,#0ea472)}
+  .quick-actions{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+  .qa-btn{
+    text-align:center;font-weight:700;font-size:14.5px;padding:11px 8px;border-radius:14px;cursor:pointer;
+    transition:transform .2s ease;
+  }
+  .qa-btn:hover{transform:translateY(-2px)}
+  .qa-in{background:#dcfce7;color:#15803d}
+  .qa-out{background:#fee2e2;color:#b91c1c}
+  .qa-calc{background:var(--bg-soft);border:1px solid var(--border);min-width:52px}
+  [data-theme="dark"] .qa-in{background:#14532d;color:#4ade80}
+  [data-theme="dark"] .qa-out{background:#450a0a;color:#f87171}
+
+  /* ============ সেকশন হেড ============ */
+  .sec-head{text-align:center;max-width:640px;margin:0 auto 52px}
+  .sec-head h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;margin:16px 0 10px}
+  .sec-head p{color:var(--muted);font-weight:500;font-size:16.5px}
+
+  /* ============ ফিচার কার্ড ============ */
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .f-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:28px 24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+    transition:transform .3s ease,box-shadow .3s ease;
+  }
+  .f-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--fc,var(--brand))}
+  .f-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-md)}
+  .f-mint{--fc:#10b981}.f-sky{--fc:#0ea5e9}.f-lav{--fc:#8b5cf6}
+  .f-amb{--fc:#f59e0b}.f-rose{--fc:#f43f5e}.f-cyan{--fc:#06b6d4}
+  .f-icon{
+    width:56px;height:56px;border-radius:17px;font-size:27px;
+    display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+    background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--border);
+  }
+  .f-card h3{font-size:19.5px;font-weight:700;margin-bottom:8px}
+  .f-card p{color:var(--muted);font-size:15px;font-weight:500}
+
+  /* ============ মেমো শোকেস ============ */
+  #memo{background:var(--bg-soft)}
+  .memo-showcase{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+  .check-list{list-style:none;margin:22px 0 28px;display:grid;gap:13px}
+  .check-list li{display:flex;gap:11px;font-weight:600;font-size:15.5px;align-items:flex-start}
+  .check-dot{
+    flex:none;width:24px;height:24px;border-radius:50%;background:var(--grad);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:2px;
+    box-shadow:0 5px 12px -4px rgba(14,164,114,.6);
+  }
+  .cash-memo-card{
+    background:#fff;color:#0f172a;border-radius:24px;padding:26px;
+    box-shadow:0 34px 60px -22px rgba(8,50,35,.35);border:1px solid #e2e8f0;
+    transform:rotate(1.2deg);transition:transform .4s ease;max-width:470px;margin:0 auto;width:100%;
+  }
+  .cash-memo-card:hover{transform:rotate(0deg) scale(1.015)}
+  .memo-center{text-align:center;border-bottom:2px dashed #cbd5e1;padding-bottom:16px;margin-bottom:16px}
+  .memo-bismillah{font-size:15px;font-weight:700;color:#0b8a5f}
+  .memo-brand{font-family:'Baloo Da 2',sans-serif;font-size:27px;font-weight:800;color:#0c1f18;line-height:1.2}
+  .memo-sub{font-size:12.5px;color:#64748b;font-weight:600}
+  .memo-pill{
+    display:inline-flex;align-items:center;gap:7px;margin-top:10px;
+    background:#e2f5ec;color:#0b8a5f;font-size:12.5px;font-weight:700;
+    padding:4px 13px;border-radius:99px;
+  }
+  .memo-party{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .memo-num-badge{background:#008955;color:#fff;font-weight:800;font-size:12.5px;padding:2px 10px;border-radius:8px}
+  .memo-strips{display:grid;gap:9px}
+  .m-strip{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 15px;border-radius:12px;font-weight:700;font-size:14.5px;
+  }
+  .m-strip span:last-child{font-family:'Baloo Da 2',sans-serif;font-size:16px}
+  .ms-neutral{background:#f1f5f9;color:#334155}
+  .ms-rose{background:#fff1f2;color:#be123c}
+  .ms-sky{background:#f0f9ff;color:#0369a1}
+  .ms-mint{background:#ecfdf5;color:#047857}
+  .ms-due{background:#0c1f18;color:#fff}
+  .memo-notice{
+    margin-top:16px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;
+    font-size:12.5px;font-weight:600;border-radius:12px;padding:10px 13px;
+  }
+
+  /* ============ ডাউনলোড CTA ============ */
+  .cta-box{
+    background:linear-gradient(130deg,#0a7a54 0%,#0ea472 45%,#0e8fb5 100%);
+    border-radius:30px;color:#fff;text-align:center;padding:58px 30px;position:relative;overflow:hidden;
+    box-shadow:var(--shadow-lg);
+  }
+  .cta-box::before,.cta-box::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.13)}
+  .cta-box::before{width:300px;height:300px;top:-140px;left:-90px}
+  .cta-box::after{width:240px;height:240px;bottom:-120px;right:-60px}
+  .cta-box h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;margin-bottom:12px;position:relative;z-index:1}
+  .cta-box p{max-width:560px;margin:0 auto;font-weight:500;opacity:.94;position:relative;z-index:1}
+  .cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px;position:relative;z-index:1}
+
+  /* ============ ফুটার ============ */
+  footer{border-top:1px solid var(--border);padding:28px 0;text-align:center;color:var(--muted);font-weight:500;font-size:15px}
+
+  /* ============ স্ক্রল রিভিল ============ */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  .feature-grid .f-card:nth-child(2){transition-delay:.08s}
+  .feature-grid .f-card:nth-child(3){transition-delay:.16s}
+  .feature-grid .f-card:nth-child(4){transition-delay:.08s}
+  .feature-grid .f-card:nth-child(5){transition-delay:.16s}
+  .feature-grid .f-card:nth-child(6){transition-delay:.24s}
+
+  /* ============ রেসপন্সিভ ============ */
+  @media (max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:44px}
+    .feature-grid{grid-template-columns:repeat(2,1fr)}
+    .memo-showcase{grid-template-columns:1fr;gap:44px}
+    .nav-links{display:none}
+    section{padding:64px 0}
+  }
+  @media (max-width:560px){
+    .feature-grid{grid-template-columns:1fr}
+    .wallet-strip{grid-template-columns:repeat(2,1fr)}
+    .nav-actions .btn{display:none}
+    .balance-row{grid-template-columns:1fr 1fr}
+    .hero{padding:52px 0 72px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
 </head>
 <body>
 
@@ -717,7 +345,7 @@
   <main>
     <section class="hero">
       <div class="container hero-grid">
-        <div>
+        <div class="reveal in">
           <span class="pill">
             <span class="pill-dot"></span>
             সম্পূর্ণ বাংলা • অ্যান্ড্রয়েড অ্যাপ (v5.0)
@@ -728,7 +356,6 @@
           </p>
 
           <div class="hero-cta">
-            <!-- এখানে আপনার GitHub Release বা সরাসরি APK লিংক বসিয়ে দিন -->
             <a href="https://github.com/Anowaranas/pokethisab/releases/download/v5.0/app-debug.apk" class="btn btn-primary" download>
               ⬇ ফ্রি APK ডাউনলোড করুন
             </a>
@@ -812,44 +439,44 @@
     <!-- ফিচারসমূহ -->
     <section id="features">
       <div class="container">
-        <div class="sec-head">
+        <div class="sec-head reveal">
           <span class="pill"><span class="pill-dot"></span>মূল সুবিধাসমূহ</span>
           <h2>এক অ্যাপেই আপনার সব আর্থিক হিসাব-নিকাশ</h2>
           <p>বাংলাদেশের দৈনন্দিন প্রয়োজন মাথায় রেখে চোখ-জুড়ানো প্যাস্টেল ডিজাইন ও সহজ বাংলা ইন্টারফেস।</p>
         </div>
 
         <div class="feature-grid">
-          <div class="f-card f-mint">
+          <div class="f-card f-mint reveal">
             <div class="f-icon">📊</div>
             <h3>স্মার্ট মাসিক বাজেট প্ল্যানার</h3>
             <p>মোট মাসিক আয় দিয়ে ১ ট্যাপেই ৮৫% স্মার্ট সাজেশনে খাতভিত্তিক বাজেট সেট করুন এবং ৮০% পেরোলেই সতর্কতা পান।</p>
           </div>
 
-          <div class="f-card f-sky">
+          <div class="f-card f-sky reveal">
             <div class="f-icon">👛</div>
             <h3>৪টি ওয়ালেট ও ট্রান্সফার</h3>
             <p>ক্যাশ, বিকাশ, নগদ ও ব্যাংক—প্রতিটির আলাদা ব্যালেন্স দেখুন এবং মোট আয়-ব্যয় না বদলে ওয়ালেট ট্রান্সফার করুন।</p>
           </div>
 
-          <div class="f-card f-lav">
+          <div class="f-card f-lav reveal">
             <div class="f-icon">🧾</div>
             <h3>ডিজিটাল ক্যাশ মেমো</h3>
             <p>বিসমিল্লাহ হেডার, মেমো নম্বর ও ৫ রঙিন হিসাব স্ট্রিপসহ হুবহু মেমো ছবি গ্যালারিতে ডাউনলোড, শেয়ার ও প্রিন্ট করুন।</p>
           </div>
 
-          <div class="f-card f-amb">
+          <div class="f-card f-amb reveal">
             <div class="f-icon">📒</div>
             <h3>বাকির খাতা ও লোন কিস্তি</h3>
             <p>পাওনা-দেনা, লোন, মাসিক কিস্তি ও সঞ্চয়ের নিখুঁত হিসাব রাখুন আলাদা পার্টি ও লেনদেন ইতিহাসসহ।</p>
           </div>
 
-          <div class="f-card f-rose">
+          <div class="f-card f-rose reveal">
             <div class="f-icon">🔔</div>
             <h3>বিল ও ঋণ রিমাইন্ডার</h3>
             <p>নির্ধারিত তারিখের আগেই বিল, কিস্তি ও পাওনা আদায়ের স্মার্ট রিমাইন্ডার অ্যালার্ট নোটিফিকেশন পান।</p>
           </div>
 
-          <div class="f-card f-cyan">
+          <div class="f-card f-cyan reveal">
             <div class="f-icon">🔒</div>
             <h3>ক্লাউড সিঙ্ক ও নিরাপত্তা</h3>
             <p>গুগল সাইন-ইনের মাধ্যমে নিরাপদ ক্লাউড ব্যাকআপ, বায়োমেট্রিক লক, ক্যালকুলেটর এবং লাইট/ডার্ক মোড সুবিধা।</p>
@@ -862,7 +489,7 @@
     <section id="memo">
       <div class="container">
         <div class="memo-showcase">
-          <div>
+          <div class="reveal">
             <span class="pill"><span class="pill-dot"></span>প্রফেশনাল রসিদ</span>
             <h2 style="font-size: clamp(24px, 3vw, 34px); margin: 12px 0 10px; line-height: 1.2;">
               অ্যাপে যেমন দেখায়, ডাউনলোড করলেও হুবহু তেমনই ডিজিটাল ক্যাশ মেমো
@@ -881,7 +508,7 @@
           </div>
 
           <!-- মেমো কার্ডের আসল ডিজাইন -->
-          <div class="cash-memo-card">
+          <div class="cash-memo-card reveal">
             <div class="memo-center">
               <div class="memo-bismillah">বিসমিল্লাহির রাহমানির রাহিম</div>
               <div class="memo-brand">পকেট হিসাব</div>
@@ -926,13 +553,12 @@
     <!-- ডাউনলোড সেকশন -->
     <section id="download">
       <div class="container">
-        <div class="cta-box">
+        <div class="cta-box reveal">
           <h2>পকেট হিসাব (v5.0) ডাউনলোড করুন</h2>
           <p>
             আপনার অ্যান্ড্রয়েড ফোনে ইনস্টল করে আজ থেকেই শুরু করুন নির্ভুল আয়-ব্যয়, বাজেট পরিকল্পনা ও ডিজিটাল ক্যাশ মেমো ব্যবস্থাপনা।
           </p>
           <div class="cta-actions">
-            <!-- প্রয়োজনে এখানে আপনার GitHub Releases APK লিংক দিন -->
             <a href="https://github.com/Anowaranas/pokethisab/releases/download/v5.0/app-debug.apk" class="btn btn-white" download>
               ⬇ Android APK ডাউনলোড (v5.0)
             </a>
@@ -952,6 +578,7 @@
   </footer>
 
   <script>
+    // থিম টগল (লাইট / ডার্ক)
     const root = document.documentElement;
     const toggleBtn = document.getElementById('themeToggle');
     const savedTheme = localStorage.getItem('pocket_hisab_theme');
@@ -965,6 +592,22 @@
       localStorage.setItem('pocket_hisab_theme', next);
       toggleBtn.textContent = next === 'dark' ? '☀️' : '🌙';
     });
+
+    // স্ক্রল রিভিল অ্যানিমেশন
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      revealEls.forEach((el) => observer.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add('in'));
+    }
   </script>
 </body>
 </html>
