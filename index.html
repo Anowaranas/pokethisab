@@ -329,6 +329,7 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-75L9Z9691P');
 </script>
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
 
@@ -647,5 +648,34 @@ gtag('config', 'G-75L9Z9691P');
       revealEls.forEach((el) => el.classList.add('in'));
     }
   </script>
+
+<button id="langToggle" aria-label="Language" style="position:fixed;right:16px;bottom:16px;z-index:9999;background:#101418;color:#fff;border:none;padding:10px 18px;border-radius:999px;font-weight:700;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.3)">EN</button>
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+(function () {
+  const DICT = {"সম্পূর্ণ বাংলা • অ্যান্ড্রয়েড অ্যাপ": "Fully in Bengali • Android App", "দৈনিক আয়-ব্যয়, বাজেট ও ডিজিটাল ক্যাশ মেমো এখন এক পকেটেই": "Daily income & expenses, budget and digital cash memos — all in one pocket", "এক অ্যাপেই আপনার সব আর্থিক হিসাব-নিকাশ": "All your finances in one app", "অ্যাপে যেমন দেখায়, ডাউনলোড করলেও হুবহু তেমনই ডিজিটাল ক্যাশ মেমো": "Digital cash memos that print exactly as they look in the app", "অ্যাপের স্ক্রিনশট": "App Screenshots", "আসল অ্যাপের পর্দা — যেমনটা ফোনে দেখবেন": "Real app screens — exactly as on your phone", "পকেট হিসাব ডাউনলোড করুন": "Download Pocket Hisab", "সাধারণ জিজ্ঞাসা": "Frequently Asked Questions", "স্মার্ট মাসিক বাজেট প্ল্যানার": "Smart Monthly Budget Planner", "৪টি ওয়ালেট ও ট্রান্সফার": "4 Wallets & Transfers", "ডিজিটাল ক্যাশ মেমো": "Digital Cash Memo", "বাকির খাতা ও লোন কিস্তি": "Due Ledger & Loan Installments", "বিল ও ঋণ রিমাইন্ডার": "Bill & Loan Reminders", "ক্লাউড সিঙ্ক ও নিরাপত্তা": "Cloud Sync & Security", "🧾 ডিজিটাল মেমো দেখুন": "🧾 See Digital Memo", "এখনই ব্যবহার শুরু করুন →": "Start Using Now →", "★ GitHub রিপোজিটরি দেখুন": "★ View GitHub Repository", "পকেট হিসাব কি সম্পূর্ণ ফ্রি?": "Is Pocket Hisab completely free?", "ইন্টারনেট ছাড়া কি অ্যাপটি চলবে?": "Does the app work without internet?", "ক্যাশ ছাড়া বিকাশ, নগদ ও ব্যাংকের হিসাব রাখা যাবে?": "Can I track bKash, Nagad and bank accounts too?", "আমার ডেটা কতটা নিরাপদ?": "How safe is my data?"};
+  const KEY = 'workspace/pokethisab_lang';
+  const btn = document.getElementById('langToggle');
+  function walk(node, fn) {
+    node.childNodes.forEach(c => {
+      if (c.nodeType === 3) fn(c);
+      else if (c.nodeType === 1 && !['SCRIPT','STYLE'].includes(c.tagName)) walk(c, fn);
+    });
+  }
+  function apply(lang) {
+    walk(document.body, n => {
+      const t = n.nodeValue.trim();
+      if (!t) return;
+      if (lang === 'en' && DICT[t]) n.nodeValue = n.nodeValue.replace(t, DICT[t]);
+      if (lang === 'bn') { for (const k in DICT) if (DICT[k] === t) n.nodeValue = n.nodeValue.replace(t, k); }
+    });
+    btn.textContent = lang === 'en' ? 'বাংলা' : 'EN';
+    localStorage.setItem(KEY, lang);
+  }
+  let cur = localStorage.getItem(KEY) || 'bn';
+  if (cur === 'en') apply('en');
+  btn.addEventListener('click', () => { cur = cur === 'en' ? 'bn' : 'en'; apply(cur); });
+})();
+</script>
 </body>
 </html>
