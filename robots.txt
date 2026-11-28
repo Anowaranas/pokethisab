@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anowaranas.github.io/pokethisab/sitemap.xml
+Sitemap: https://anowaranas.is-a.dev/pokethisab/sitemap.xml
